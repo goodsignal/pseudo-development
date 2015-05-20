@@ -1,0 +1,89 @@
+Parameter Database Specifications
+
+Each of the following tables will likely need to be present both within the device and on our servers.
+Device and server will sync if a "change of settings" flag has been set from either device or on server.
+To keep syncing straight, any setting changes may need an additional table recording the change date.
+
+Device-Server communication method:
+	TBD, but standard TCP/IP transfer is within the capability of our processor and wifi module, using existing standards. We would like to minimize the need for extra drivers.
+
+TBD:
+	Save location within device. SD info sectors could be dedicated if EEPROM doesn't have enough room.
+
+Variable Requirements:
+	Server: 	change flag
+	Firmware: 	change flag
+
+
+Device Parameters Table:
+	local_wifi_ssid				VARCHAR(256)
+	local_ssid_pw				VARCHAR(256)
+	head_commit_freq			INTEGER
+	analyst_port				INTEGER
+	analyst_hostname			VARCHAR(256)
+	analyst_ssid				VARCHAR(256)
+	analyst_pass				VARCHAR(256)
+	cloud_hostname				VARCHAR(256)
+	cloud_url_base				VARCHAR(256)
+	cloud_port					INTEGER
+	cloud_upload_freq			INTEGER
+	du_pairing_limit			INTEGER
+	display_pair_mac			HEX(12)
+	display_pair_mac_pw			VARCHAR
+	controller_pair_mac			HEX(12)
+	controller_pair_mac_pw		VARCHAR
+	analyst_sync_res			INTEGER
+	cloud_sync_res				INTEGER
+	time_zone					TIME
+	bucket_reset_time			TIME
+	bucket_multiplier			INTEGER
+	transition_table_code		INTEGER
+	L-transition				INTEGER
+
+
+Energy Level Transition Tables
+	id							INTEGER
+	L-transition				INTEGER
+	transition-value			INTEGER
+
+Power Level Transition Tables
+	id							INTEGER
+	L-transition				INTEGER
+	transition-value			INTEGER
+	
+
+Color Transition Lookup Tables
+	id							INTEGER
+	color_transition_table_code	INTEGER
+	transitions					INT ARRAY(15036)
+
+Changed Settings Table (if update flag is set on both server and device, compare timestamps and sync using values with latest timestamp)
+	local_wifi_ssid				TIMESTAMP
+	local_ssid_pw				TIMESTAMP
+	head_commit_freq			TIMESTAMP
+	analyst_port				TIMESTAMP
+	analyst_hostname			TIMESTAMP
+	analyst_ssid				TIMESTAMP
+	analyst_pass				TIMESTAMP
+	cloud_hostname				TIMESTAMP
+	cloud_url_base				TIMESTAMP
+	cloud_port					TIMESTAMP
+	cloud_upload_freq			TIMESTAMP
+	du_pairing_limit			TIMESTAMP
+	analyst_sync_res			TIMESTAMP
+	cloud_sync_res				TIMESTAMP
+	time_zone					TIMESTAMP
+	bucket_reset_time			TIMESTAMP
+	bucket_multiplier			TIMESTAMP
+	transition_table_code		TIMESTAMP
+	L-transition				TIMESTAMP
+	color_transition_table_code	TIMESTAMP
+
+
+	
+Additional features to consider after above is working:
+
+Energy and Power transition values. 
+	We may develop an algorithmically driven adjustment curve to help increase the information value of the color changes.
+	
+
