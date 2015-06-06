@@ -1,0 +1,40 @@
+Parameter Definitions:
+
+local_wifi_ssid				VARCHAR(256)
+local_ssid_pw				VARCHAR(256)
+	User assignable wifi credentials. Enables data transfer to/from cloud.
+
+head_commit_freq			INTEGER
+	We're not sure what this is. To be identified.
+	
+analyst_port				INTEGER
+analyst_hostname			VARCHAR(256)
+analyst_ssid				VARCHAR(256)
+analyst_pass				VARCHAR(256)
+	Analyst server credentials. This should not be user changeable. This should be changeable by Canary to accommodate custom data collection systems for building managers and analysts.
+
+cloud_hostname				VARCHAR(256)
+cloud_url_base				VARCHAR(256)
+cloud_port					INTEGER
+cloud_upload_freq			INTEGER
+	Cloud server credentials. This should not be user changeable. This should be changeable by Canary in the event that our cloud hosting requires a change.
+	
+du_pairing_limit			INTEGER
+	I don't think this is currently implemented, though it is in the code. Confirmation needed. We do want to enable the capability of controlling multiple displays. Research needed to clarify the mechanism. Question, does the Controller (v6.0.1) act as a beacon? Will it broadcast color transitions to all displays that carry matching MAC SSIDs?
+	
+display_pair_mac			HEX(12)
+	Not currently implemented (v6.0.1). This may be required to automate pairing of replacement displays. It would allow us to assign a display from the cloud/analyst server. The controller would then keep an eye out for any new Display broadcasting a ready-to-pair SSID. If the display MAC matches, then pairing process executes.
+	
+display_pair_mac_pw			VARCHAR
+
+
+controller_pair_mac			HEX(12)
+controller_pair_mac_pw		VARCHAR
+analyst_sync_res			INTEGER
+cloud_sync_res				INTEGER
+time_zone					TIME
+bucket_reset_time			TIME
+bucket_multiplier			INTEGER
+transition_table_code		INTEGER
+L-transition				INTEGER
+	
