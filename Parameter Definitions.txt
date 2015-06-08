@@ -26,15 +26,36 @@ display_pair_mac			HEX(12)
 	Not currently implemented (v6.0.1). This may be required to automate pairing of replacement displays. It would allow us to assign a display from the cloud/analyst server. The controller would then keep an eye out for any new Display broadcasting a ready-to-pair SSID. If the display MAC matches, then pairing process executes.
 	
 display_pair_mac_pw			VARCHAR
-
+	Not currently implemented (v6.0.1). This might not be an externally changeable variable. This would be an algorithmically determined password based on the MAC address. Could ensure that only the intended device gets connected in a device crowded environment, or prevent any hijacking of neighboring devices.
 
 controller_pair_mac			HEX(12)
+	Currently this is assigned to the Display. It then broadcasts the Controller MAC as a wifi access point SSID. If a Controller detects an SSID of it's own MAC, it knows to connect with that Display.
+	
 controller_pair_mac_pw		VARCHAR
-analyst_sync_res			INTEGER
-cloud_sync_res				INTEGER
+	Not currently implemented (v6.0.1). This might not be an externally changeable variable. This would be an algorithmically determined password based on the MAC address. Could ensure that only the intended device gets connected in a device crowded environment, or prevent any hijacking of neighboring devices.
+	
+analyst_sync_resolution		INTEGER
+	Analyst may choose a coarser data resolution than second-by-second for faster download times and easier data management. Per day or per hour energy use is most likely.
+	
+cloud_sync_resolution		INTEGER
+	May choose a coarser data resolution than second-by-second for economic use of servers. Per minute or per hour energy use is most likely.
+	
 time_zone					TIME
+	Change time time zone to match user's location.
+	
 bucket_reset_time			TIME
+	Change time when daily bucket resets to zero.
+	
 bucket_multiplier			INTEGER
-transition_table_code		INTEGER
-L-transition				INTEGER
+	Currently implemented, but it should probably be renamed and applied to the instant values. We'll always want the bucket/energy to directly relate to the specified budget. But an algorithm my be desired to shift the responsiveness of the instant color changes. It currently is changed to be three times more responsive.
+	
+color_lookup_table			ARRAY
+	Holds all the color patterns for each level transition and operating mode indicators.
+	
+L-transition_table_default			ARRAY
+	Holds all the default seasonal level transition by monthly resolution. I would prefer to change monthly resolution to daily resolution if possible (with a maximum of 12 seasonal changes, if necessary for code simplicity). If 12 changes, the array would hold 60 values in the following pattern.
+	FIRST DAY OF YEAR (001); L1; L2; L3; L4; Day to begin new level set; L1; L2; L3; L4;  Day to begin new level set; L1; L2; L3; L4; etc...
+	
+L-transition_table_temporary 	ARRAY
+	Holds temporary set of overriding transitions and an expiration period before either checking for a new set or reverting to defaults. This allows for dynamic transitions that open the possiblity for the social gamification of the system. For example a transition set relative to a frienemies energy use data (winning/losing?).
 	
