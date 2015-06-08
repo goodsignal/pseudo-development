@@ -1,4 +1,5 @@
 Parameter Definitions:
+Note: data types are best guesses. This a draft document. 2015-06-08
 
 local_wifi_ssid				VARCHAR(256)
 local_ssid_pw				VARCHAR(256)
@@ -11,7 +12,7 @@ analyst_port				INTEGER
 analyst_hostname			VARCHAR(256)
 analyst_ssid				VARCHAR(256)
 analyst_pass				VARCHAR(256)
-	Analyst server credentials. This should not be user changeable. This should be changeable by Canary to accommodate custom data collection systems for building managers and analysts.
+	Analyst server credentials. This should not be user changeable. This should be changeable by Canary to accommodate custom data collection systems for building managers and analysts when connecting to a VM server or an Apache MySQL stack.
 
 cloud_hostname				VARCHAR(256)
 cloud_url_base				VARCHAR(256)
@@ -31,16 +32,16 @@ display_pair_mac_pw			VARCHAR
 controller_pair_mac			HEX(12)
 	Currently this is assigned to the Display. It then broadcasts the Controller MAC as a wifi access point SSID. If a Controller detects an SSID of it's own MAC, it knows to connect with that Display.
 	
-controller_pair_mac_pw		VARCHAR
+controller_pair_mac_pw			VARCHAR
 	Not currently implemented (v6.0.1). This might not be an externally changeable variable. This would be an algorithmically determined password based on the MAC address. Could ensure that only the intended device gets connected in a device crowded environment, or prevent any hijacking of neighboring devices.
 	
-analyst_sync_resolution		INTEGER
+analyst_sync_resolution			INTEGER
 	Analyst may choose a coarser data resolution than second-by-second for faster download times and easier data management. Per day or per hour energy use is most likely.
 	
-cloud_sync_resolution		INTEGER
+cloud_sync_resolution			INTEGER
 	May choose a coarser data resolution than second-by-second for economic use of servers. Per minute or per hour energy use is most likely.
 	
-time_zone					TIME
+time_zone				TIME
 	Change time time zone to match user's location.
 	
 bucket_reset_time			TIME
