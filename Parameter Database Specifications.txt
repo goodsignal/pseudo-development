@@ -1,89 +1,113 @@
-Parameter Database Specifications
+Parameter Database Specifications{
+	Table storage location{
+		Each of the following tables will likely need to be present both within the device and on our servers.
+		Save location within device. SD info sectors could be dedicated if EEPROM doesn't have enough room.
+		Device and server will sync if a "change of settings" flag has been set from either device or on server.
+		To keep syncing straight, any setting changes may need an additional table recording the change date.
+	}
+	Device-Server communication method:{ //This belongs somewhere else in the specification documentation.
+		TBD, but standard TCP/IP transfer is within the capability of our processor and wifi module, using existing standards. We would like to minimize the need for extra drivers.
+	}
 
-Each of the following tables will likely need to be present both within the device and on our servers.
-Device and server will sync if a "change of settings" flag has been set from either device or on server.
-To keep syncing straight, any setting changes may need an additional table recording the change date.
+	Tables that will be have unique values that should not be mirrored between SERVER and DEVICE{
+		Server Specific Parameters:{
+			update_flag		BOOLEAN	//quick reference for if parameter sync is needed due to updates since last sync.
+		}
+		Device Specific Parameters:{
+			update_flag		BOOLEAN	//quick reference for if parameter sync is needed due to updates since last sync.
+		}
+	}
 
-Device-Server communication method:
-	TBD, but standard TCP/IP transfer is within the capability of our processor and wifi module, using existing standards. We would like to minimize the need for extra drivers.
+	Device Parameters Table:{
+		local_wifi_ssid				VARCHAR(256)
+		local_ssid_pw				VARCHAR(256)
+		head_commit_freq			INTEGER
+		analyst_port				INTEGER
+		analyst_hostname			VARCHAR(256)
+		analyst_ssid				VARCHAR(256)
+		analyst_pass				VARCHAR(256)
+		cloud_hostname				VARCHAR(256)
+		cloud_url_base				VARCHAR(256)
+		cloud_port					INTEGER
+		cloud_upload_freq			INTEGER
+		du_pairing_limit			INTEGER
+		display_pair_mac			HEX(12)
+		display_pair_mac_pw			VARCHAR
+		controller_pair_mac			HEX(12)
+		controller_pair_mac_pw		VARCHAR
+		analyst_sync_res			INTEGER
+		cloud_sync_res				INTEGER
+		time_zone					TIME
+		bucket_reset_time			TIME
+		bucket_multiplier			INTEGER
+		transition_table_code		INTEGER
+		L-transition				INTEGER
+	}
 
-TBD:
-	Save location within device. SD info sectors could be dedicated if EEPROM doesn't have enough room.
+	Energy Level Transition Tables{
+		id							INTEGER
+		L-transition				INTEGER
+		transition-value			INTEGER
+	}
 
-Variable Requirements:
-	Server: 	change flag
-	Firmware: 	change flag
+	Power Level Transition Tables{
+		id							INTEGER
+		L-transition				INTEGER
+		transition-value			INTEGER
+	}
 
+	Color Transition Lookup Tables{
+		id							INTEGER
+		color_transition_table_code	INTEGER
+		transitions					INT ARRAY(15036)
+	}
 
-Device Parameters Table:
-	local_wifi_ssid				VARCHAR(256)
-	local_ssid_pw				VARCHAR(256)
-	head_commit_freq			INTEGER
-	analyst_port				INTEGER
-	analyst_hostname			VARCHAR(256)
-	analyst_ssid				VARCHAR(256)
-	analyst_pass				VARCHAR(256)
-	cloud_hostname				VARCHAR(256)
-	cloud_url_base				VARCHAR(256)
-	cloud_port					INTEGER
-	cloud_upload_freq			INTEGER
-	du_pairing_limit			INTEGER
-	display_pair_mac			HEX(12)
-	display_pair_mac_pw			VARCHAR
-	controller_pair_mac			HEX(12)
-	controller_pair_mac_pw		VARCHAR
-	analyst_sync_res			INTEGER
-	cloud_sync_res				INTEGER
-	time_zone					TIME
-	bucket_reset_time			TIME
-	bucket_multiplier			INTEGER
-	transition_table_code		INTEGER
-	L-transition				INTEGER
+	Changed Settings Table:{	// (if update_flag is set on either SERVER or DEVICE, compare timestamps and sync using values with latest timestamp)
+		local_wifi_ssid				TIMESTAMP
+		local_ssid_pw				TIMESTAMP
+		head_commit_freq			TIMESTAMP
+		analyst_port				TIMESTAMP
+		analyst_hostname			TIMESTAMP
+		analyst_ssid				TIMESTAMP
+		analyst_pass				TIMESTAMP
+		cloud_hostname				TIMESTAMP
+		cloud_url_base				TIMESTAMP
+		cloud_port					TIMESTAMP
+		cloud_upload_freq			TIMESTAMP
+		du_pairing_limit			TIMESTAMP
+		analyst_sync_res			TIMESTAMP
+		cloud_sync_res				TIMESTAMP
+		time_zone					TIMESTAMP
+		bucket_reset_time			TIMESTAMP
+		bucket_multiplier			TIMESTAMP
+		transition_table_code		TIMESTAMP
+		L-transition				TIMESTAMP
+		color_transition_table_code	TIMESTAMP
 
-
-Energy Level Transition Tables
-	id							INTEGER
-	L-transition				INTEGER
-	transition-value			INTEGER
-
-Power Level Transition Tables
-	id							INTEGER
-	L-transition				INTEGER
-	transition-value			INTEGER
+}
 	
+Additional features to consider after above is working:{
 
-Color Transition Lookup Tables
-	id							INTEGER
-	color_transition_table_code	INTEGER
-	transitions					INT ARRAY(15036)
-
-Changed Settings Table (if update flag is set on both server and device, compare timestamps and sync using values with latest timestamp)
-	local_wifi_ssid				TIMESTAMP
-	local_ssid_pw				TIMESTAMP
-	head_commit_freq			TIMESTAMP
-	analyst_port				TIMESTAMP
-	analyst_hostname			TIMESTAMP
-	analyst_ssid				TIMESTAMP
-	analyst_pass				TIMESTAMP
-	cloud_hostname				TIMESTAMP
-	cloud_url_base				TIMESTAMP
-	cloud_port					TIMESTAMP
-	cloud_upload_freq			TIMESTAMP
-	du_pairing_limit			TIMESTAMP
-	analyst_sync_res			TIMESTAMP
-	cloud_sync_res				TIMESTAMP
-	time_zone					TIMESTAMP
-	bucket_reset_time			TIMESTAMP
-	bucket_multiplier			TIMESTAMP
-	transition_table_code		TIMESTAMP
-	L-transition				TIMESTAMP
-	color_transition_table_code	TIMESTAMP
-
-
-	
-Additional features to consider after above is working:
-
-Energy and Power transition values. 
+Energy and Power transition values.{
 	We may develop an algorithmically driven adjustment curve to help increase the information value of the color changes.
+	{
+
+Disaggregation and Classification{	
+
+	Appliance Identification Table{
+		This could be very useful once disaggregation is implemented. This data should be mirrored in the Cloud and on SD storage.
+		Unique_POWERSIGNATURE_ID 		INTEGER(10-bit should be enough) // we'll need to balance how many signatures we'll want to keep track of with how many SD sectors we want to designate for this table.
+		Assignable_Appliance_Name 		STRING(ID# used until Name assigned)	
+		Manually Identified or Statistically assigned Name		BOOLEAN
+		Signature_Vector_Space			MATRIX //statistically acceptible indenfication space for for new signatures to be compared against.
+		Quality_Rating_of_V-Space		INTEGER (4-bit) //Improves over time as SERVER gians more confidence for each appliance. Helps determine boundary for whether a detected power change is assigned a new ID or not.	Also, will be used to recycle Signature_ID values if we run out of space in the predetermined table size. If we run out of room, higher confidence ratings will replace the lowest confidence ratings. 
+	}
+
+	Signature Event Table{
+		Timestamp (ID)				TIMESTAMP
+		Unique_POWERSIGNATURE_ID 	INTEGER
+	}
+}
 	
+}
 
