@@ -104,8 +104,10 @@ Disaggregation and Classification{
 	}
 
 	Signature Event Table{
+		//This might be better inline with the energy data, adding signature ID after any identified data timestamp. Not sure if that's a simple solution considering events that span across SD storage sectors.
 		Timestamp (ID)				TIMESTAMP
 		Unique_POWERSIGNATURE_ID 	INTEGER
+		//This table would be cleaned to match the locally recorded data. If local data only holds 1 year, timestamps in this table should directly match what's stored locally.
 	}
 }
 	
